@@ -31,7 +31,7 @@ global  eco n malla_a malla_z pi_z matSt pos ind    % parámetros y estados
     rho_z       = 0.90;     % persistencia del choque idiosincrático
     sigma_z     = 0.20;     % volatilidad del choque idiosincrático
     % Solución numérica
-    n.z         = 5;        % número de nodos en la malla de productividad
+    n.z         = 10;       % número de nodos en la malla de productividad
     n.a         = 500;      % número de nodos en la malla de ahorros
     a_max       = 50;       % máxima riqueza permitida
 
