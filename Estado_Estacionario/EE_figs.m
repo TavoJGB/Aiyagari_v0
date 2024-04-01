@@ -3,9 +3,9 @@ function EE_figs()
 %% PREÁMBULO
 
 % Cargar variables globales
-global  n malla_a malla_z matSt pos ind ... % parámetros y estados
-        a_pol c_pol vv ...                  % decisiones óptimas y valor
-        Q mu                                % transiciones y distribución
+global  malla_a matSt pos ind ...   % parámetros y estados
+        a_pol c_pol vv ...          % decisiones óptimas y valor
+        mu                          % distribución
 
 % Opciones
 tam_f = 16; % tamaño de fuente
