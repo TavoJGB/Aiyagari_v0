@@ -19,7 +19,8 @@ addpath Funciones
 addpath Estado_Estacionario
 
 % Crear variables globales
-global  eco n malla_a malla_z pi_z matSt pos ind    % parámetros y estados
+global  eco n malla_a malla_z pi_z matSt pos ind ... % parámetros y estados
+        c_pol vv indL indU wgt
 
 % Parámetros
     % Economía
@@ -33,13 +34,13 @@ global  eco n malla_a malla_z pi_z matSt pos ind    % parámetros y estados
     % Solución numérica
     n.z         = 10;       % número de nodos en la malla de productividad
     n.a         = 500;      % número de nodos en la malla de ahorros
-    a_max       = 50;       % máxima riqueza permitida
+    eco.a_max   = 50;       % máxima riqueza permitida
 
 % Número total de estados
 n.N = n.z*n.a;
 
 % Malla de ahorros
-malla_a         = linspace(eco.a_min,a_max, n.a)';
+malla_a         = linspace(eco.a_min,eco.a_max, n.a)';
 
 
 %% PRODUCTIVIDAD
@@ -117,7 +118,7 @@ while (tst_r>tol_r)
     %   Además, SS_aiyagari devuelve la oferta agregada de capital, K1
     K_agg = EE_hogares(r_0,w_0);
     % Tipo de interés implicado (por el problema de la empresa)
-    r_1 = eco.alpha*K_agg^(eco.alpha-1)*L_agg^(1-eco.alpha)-eco.delta;
+    r_1 = eco.alpha*max(0.001,K_agg)^(eco.alpha-1)*L_agg^(1-eco.alpha)-eco.delta;
     % Convergencia
         % Criterio
         tst_r=abs(r_1-r_0);
@@ -125,6 +126,32 @@ while (tst_r>tol_r)
         fprintf('#%d | r_0: %.4f, r_1: %.4f | Brecha: %.5f\n\n',iter,r_0,r_1,tst_r)
         % Actualizar semilla
         r_0 = peso_r*r_0 + (1-peso_r)*r_1;
+end
+
+
+%% FUNCIÓN DE VALOR
+
+% Función de utilidad
+util    = @(c) (c.^(1-eco.crra)-1) / (1-eco.crra);
+
+% Preparativos
+vv = util(c_pol);   % conjetura inicial
+tst_v = 1;
+tol_v = 1e-8;
+
+% Bucle
+while tst_v>tol_v
+    % valor de continuación
+        % en función de a'
+        v_aux = eco.beta*pi_z(matSt(:,pos.z),:)*reshape(vv,n.a,n.z)';
+        % teniendo en cuenta a'=a_pol
+        v_con =    wgt .* v_aux((1:n.N)' + (indL - 1)*n.N) + ...
+                (1-wgt).* v_aux((1:n.N)' + (indU - 1)*n.N);
+    % v implicado
+    v_1 = util(c_pol) + v_con;
+    % convergencia
+    tst_v = max(abs(v_1-vv));
+    vv = v_1;
 end
 
 
