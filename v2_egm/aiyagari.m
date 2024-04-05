@@ -1,6 +1,6 @@
 % ----------------------------------------------------------------------- %
 %
-%	Introducción a la modelización macroeconómica de las desigualdades:
+%   Introducción a la modelización macroeconómica de las desigualdades:
 %   EL MODELO DE AIYAGARI
 %   v2: - Agentes heterogéneos (choques idiosincráticos de productividad).
 %       - Método: malla endógena, usando la Ec. Euler, con interpolación.
