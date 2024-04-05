@@ -51,7 +51,7 @@ while tst_IV > tol_IV
     % Optimización:
         % Restricción presupuestaria
         c_aux = c_imp(hh_dem,malla_a'); % consumo implicado por decisión de ahorros
-        % Función de valor
+        % Cada fila es una ecuación de Bellman (función de a' únicamente)
         v_aux = util(max(c_aux,c_min)) + eco.beta*vv_esp;
         % No podemos permitir valores de consumo negativos o cercanos a 0
         ind_c_neg = (c_aux<c_min);

@@ -2,6 +2,8 @@
 %
 %	Introducción a la modelización macroeconómica de las desigualdades:
 %   EL MODELO DE AIYAGARI
+%   v1: - Agentes heterogéneos (choques idiosincráticos de productividad).
+%       - Método: maximización simple en malla, sin interpolación.
 %
 % ----------------------------------------------------------------------- %
 
@@ -19,8 +21,7 @@ addpath Funciones
 addpath Estado_Estacionario
 
 % Crear variables globales
-global  eco n malla_a malla_z pi_z matSt pos ind ... % parámetros y estados
-        c_pol vv indL indU wgt
+global  eco n malla_a malla_z pi_z matSt pos ind    % parámetros y estados
 
 % Parámetros
     % Economía
@@ -34,13 +35,13 @@ global  eco n malla_a malla_z pi_z matSt pos ind ... % parámetros y estados
     % Solución numérica
     n.z         = 10;       % número de nodos en la malla de productividad
     n.a         = 500;      % número de nodos en la malla de ahorros
-    eco.a_max   = 50;       % máxima riqueza permitida
+    a_max       = 50;       % máxima riqueza permitida
 
 % Número total de estados
 n.N = n.z*n.a;
 
 % Malla de ahorros
-malla_a         = linspace(eco.a_min,eco.a_max, n.a)';
+malla_a         = linspace(eco.a_min,a_max, n.a)';
 
 
 %% PRODUCTIVIDAD
@@ -111,11 +112,11 @@ while (tst_r>tol_r)
     % Salario implicado (por las condiciones de primer orden de la empresa)
     w_0 = (1-eco.alpha)*((eco.alpha/(r_0+eco.delta))^eco.alpha)^(1/(1-eco.alpha));
     % Problema de los hogares
-    %   SS_aiyagari afecta a las variables globales
+    %   EE_hogares afecta a las variables globales
     %   - decisiones óptimas de consumo y ahorro.
     %   - matriz Q de transición entre estados.
     %   - distribución mu de estado estacionario.
-    %   Además, SS_aiyagari devuelve la oferta agregada de capital, K1
+    %   Además, EE_hogares devuelve la oferta agregada de capital, K1
     K_agg = EE_hogares(r_0,w_0);
     % Tipo de interés implicado (por el problema de la empresa)
     r_1 = eco.alpha*max(0.001,K_agg)^(eco.alpha-1)*L_agg^(1-eco.alpha)-eco.delta;
@@ -126,32 +127,6 @@ while (tst_r>tol_r)
         fprintf('#%d | r_0: %.4f, r_1: %.4f | Brecha: %.5f\n\n',iter,r_0,r_1,tst_r)
         % Actualizar semilla
         r_0 = peso_r*r_0 + (1-peso_r)*r_1;
-end
-
-
-%% FUNCIÓN DE VALOR
-
-% Función de utilidad
-util    = @(c) (c.^(1-eco.crra)-1) / (1-eco.crra);
-
-% Preparativos
-vv = util(c_pol);   % conjetura inicial
-tst_v = 1;
-tol_v = 1e-8;
-
-% Bucle
-while tst_v>tol_v
-    % valor de continuación
-        % en función de a'
-        v_aux = eco.beta*pi_z(matSt(:,pos.z),:)*reshape(vv,n.a,n.z)';
-        % teniendo en cuenta a'=a_pol
-        v_con =    wgt .* v_aux((1:n.N)' + (indL - 1)*n.N) + ...
-                (1-wgt).* v_aux((1:n.N)' + (indU - 1)*n.N);
-    % v implicado
-    v_1 = util(c_pol) + v_con;
-    % convergencia
-    tst_v = max(abs(v_1-vv));
-    vv = v_1;
 end
 
 
