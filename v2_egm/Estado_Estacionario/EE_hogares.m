@@ -35,12 +35,12 @@ hh_dem  = w*hh_z + (1+r)*hh_a;  % dinero en mano
 
 % Criterios de convergencia
 tst_MME = 1;
-tol_MME = 1e-4;
+tol_MME = 1e-8;
 
 % Bucle
 while tst_MME > tol_MME
     % Consumo implicado (Ecuación de Euler)
-    c_imp = (eco.beta*(1+r)).^(1/-eco.crra) * pi_z*c_sig_0;
+    c_imp = (eco.beta*(1+r)*pi_z*c_sig_0.^(-eco.crra)).^(1/-eco.crra);
         % la fila indica tus productividad actual
         % la columna indica tu decisión de ahorros (activos en el sig per)
     % Riqueza implicada (Restricción Presupuestaria)
